@@ -1,0 +1,36 @@
+BEGIN EXAMPLE
+
+Input:
+Node Types:
+	["Civilization", "Culture", "Society", "Tribe", "Geographical Region", "Region", "GeographicalFeature", "Historical Period", "Event", "Leader","King", "Priest", "Economy", "Resource", "Material"]
+
+	Relationship Types:
+	["LOCATED_IN", "TRAVERSED_BY", "SUPPORTED_BY", "CONQUERED_BY", "ASSERTS_DOMINANCE", "INFLUENCED_BY", "INSPIRED_BY", "REPRESENTED_BY", "MANUFACTURED_BY", "USED_IN", "PRODUCES"]
+
+	Context:
+	The Roman Empire was one of the largest empires in history. It was founded in 27 BC and ruled over much of Europe, North Africa, and parts of Asia. The empire was initially ruled by emperors and had a complex administrative structure. Rome, the capital city, was located on the Italian Peninsula, which is part of the continent of Europe. The Tiber River ran through Rome. The Roman Empire succeeded the Roman Republic and was preceded by the Roman Kingdom.
+
+Output:
+	{
+	  "node_types": {
+	    "Civilization": ["Civilization", "Culture", "Society", "Tribe"],
+	    "Geography": ["Geographical Region", "Region", "GeographicalFeature"],
+	    "Historical_Period": ["Historical Period", "Event"],
+	    "Governance": ["Leader","King", "Priest"],
+	    "Economy": ["Economy", "Resource", "Material"],
+	  },
+	  "rel_types": {
+	    "LOCATION": ["LOCATED_IN", "TRAVERSED_BY", "SUPPORTED_BY"],
+	    "CONFLICT": ["CONQUERED_BY", "ASSERTS_DOMINANCE"],
+	    "CULTURAL_INFULENCE": ["INFLUENCED_BY", "INSPIRED_BY", "REPRESENTED_BY"],
+	    "PRODUCTION": ["MANUFACTURED_BY", "USED_IN", "PRODUCES"],
+	  }
+	}
+
+END EXAMPLE
+
+Node Types:
+
+Relationshipt Types:
+
+Cntext:
