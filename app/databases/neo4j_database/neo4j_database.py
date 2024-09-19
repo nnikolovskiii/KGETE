@@ -8,13 +8,24 @@ from app.utils.str_converter import node_relationship_to_str
 
 
 class Node(BaseModel):
+    value: str
     type: str
-    properties: Dict[str, Any]
+    properties: Dict[str, Any] = {}
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.value = self.value.replace("'", "")
+        self.properties["value"] = self.value
+        self.type = self.type.replace(" ", "_")
     
     
 class Relationship(BaseModel):
     type: str
     properties: Optional[Dict[str, Any]] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.type = self.type.replace(" ", "_")
     
 
 class Neo4jDataset:
@@ -44,6 +55,7 @@ class Neo4jDataset:
                 return False
 
             properties = Neo4jDataset._transform_properties(node.properties)
+
             cypher_query = f"MATCH (n:`{label}` {{{properties}}}) RETURN n"
             result = session.run(cypher_query)
             return result.single() is not None
@@ -67,29 +79,28 @@ class Neo4jDataset:
             relationship_properties_clause = f" {{{relationship_prop}}}" if relationship_prop else ""
             cypher_query = f"""
             MATCH (node1:`{node1.type}` {{{properties1}}}), (node2:`{node2.type}` {{{properties2}}})
-            CREATE (node1)-[:{relationship.type}{relationship_properties_clause}]->(node2)
+            CREATE (node1)-[:`{relationship.type}` {relationship_properties_clause}]->(node2)
             """
 
             session.run(cypher_query)
 
     def get_neighbours(
             self,
-            node_type: str,
-            node_prop: Dict[str, Any]
+            node: Node,
     ) -> str:
         with self.driver.session() as session:
-            properties = Neo4jDataset._transform_properties(node_prop)
+            properties = Neo4jDataset._transform_properties(node.properties)
             cypher_query = f"""
-            MATCH (node:`{node_type}` {{{properties}}})-[rel]->(neighbour)
+            MATCH (node:`{node.type}` {{{properties}}})-[rel]->(neighbour)
             RETURN neighbour, rel
             UNION
-            MATCH (neighbour)-[rel]->(node:`{node_type}` {{{properties}}})
+            MATCH (neighbour)-[rel]->(node:`{node.type}` {{{properties}}})
             RETURN neighbour, rel
             """
 
             result = session.run(cypher_query)
 
-            return f"Value: {node_prop["id"]}\n" + "\n".join(
+            return f"Value: {node.properties["id"]}\n" + "\n".join(
                 [node_relationship_to_str(node, relationship) for node, relationship in result])
 
     @staticmethod
@@ -104,7 +115,17 @@ class Neo4jDataset:
     def _transform_properties(properties: Dict[str, Any]) -> str:
         return ", ".join(f"{key}: '{value}'" for key, value in properties.items())
 
-    def get_all_unique_node_types(self) -> List[str]:
+    def get_unique_rel_types(self) -> List[str]:
+        with self.driver.session() as session:
+            cypher_query = """
+            MATCH ()-[rel]->()
+            RETURN DISTINCT type(rel) AS relationship_type
+            """
+            result = session.run(cypher_query)
+            relationship_types = [record["relationship_type"] for record in result]
+            return relationship_types
+
+    def get_unique_node_types(self) -> List[str]:
         with self.driver.session() as session:
             cypher_query = """
             CALL db.labels() YIELD label
@@ -114,7 +135,7 @@ class Neo4jDataset:
             labels = [record["label"] for record in result]
             return labels
 
-    def get_all_unique_relationship_types(self) -> List[Tuple[str, str, str]]:
+    def get_unique_triplet_types(self) -> List[Tuple[str, str, str]]:
         with self.driver.session() as session:
             cypher_query = """
             MATCH (src)-[rel]->(dest)

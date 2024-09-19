@@ -17,9 +17,10 @@ class MongoDBDatabase:
     def add_entry(
             self,
             entity: BaseModel,
+            collection_name: Optional[str] = None,
             metadata: Optional[Dict[str, Any]] = None
     ) -> bool:
-        collection_name = entity.__class__.__name__
+        collection_name = entity.__class__.__name__ if collection_name is None else collection_name
         collection = self.db[collection_name]
         entry = entity.model_dump()
         if metadata:
