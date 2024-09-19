@@ -13,7 +13,7 @@ for graph_type in types:
     if graph_type.value not in unique_types:
         unique_types[graph_type.value] = graph_type
 
-for graph_type in tqdm(list(unique_types.values())[534:], desc="Extracting unique types:"):
+for graph_type in tqdm(list(unique_types.values()), desc="Extracting unique types:"):
     mdb.add_entry(graph_type, collection_name="UniqueTypes", metadata={"unique_type": "yes"})
     qdb.embedd_and_upsert_record(
         value=f"{graph_type.value}: {graph_type.description}",

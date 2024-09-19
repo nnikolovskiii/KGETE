@@ -33,8 +33,9 @@ class MongoDBDatabase:
             self,
             class_type: TypingType[T],
             doc_filter: Dict[str, Any] = None,
+            collection_name: Optional[str] = None,
     ) -> List[T]:
-        collection_name = class_type.__name__
+        collection_name = class_type.__name__ if collection_name is None else collection_name
         collection = self.db[collection_name]
         documents = collection.find(doc_filter or {})
         class_fields = class_type.model_fields.keys()
@@ -57,9 +58,10 @@ class MongoDBDatabase:
     def get_ids(
             self,
             class_type: TypingType[BaseModel],
+            collection_name: Optional[str] = None,
             doc_filter: Dict[str, Any] = None,
     ) -> List[str]:
-        collection_name = class_type.__name__
+        collection_name = class_type.__name__ if collection_name is None else collection_name
         collection = self.db[collection_name]
 
         ids_cursor = collection.find(doc_filter or {}, {"id": 1})
@@ -69,9 +71,10 @@ class MongoDBDatabase:
     def get_entity(
             self,
             id: str,
-            class_type: TypingType[BaseModel]
-    ) -> Optional[BaseModel]:
-        collection_name = class_type.__name__
+            class_type: TypingType[T],
+            collection_name: Optional[str] = None,
+    ) -> Optional[T]:
+        collection_name = class_type.__name__ if collection_name is None else collection_name
         collection = self.db[collection_name]
 
         document = collection.find_one({"id": id})
@@ -87,9 +90,10 @@ class MongoDBDatabase:
     def update_entity(
             self,
             entity: BaseModel,
+            collection_name: Optional[str] = None,
             update: Optional[Dict[str, Any]] = None
     ) -> bool:
-        collection_name = entity.__class__.__name__
+        collection_name = entity.__class__.__name__ if collection_name is None else collection_name
         collection = self.db[collection_name]
 
         entity_id = entity.id if hasattr(entity, "id") else None

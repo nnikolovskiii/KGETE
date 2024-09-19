@@ -3,31 +3,41 @@ from typing import List
 
 def group_types_template(
         types: List[str],
-        graph_type: str
 ) -> str:
-    return f""""You are a top-tier algorithm designed for extracting information in structured formats to build a knowledge graph. Group the {"node" if graph_type == "node_types" else "relation"} types that are identical and have the same meaning. Do these steps:
-1. Think and analyze how you can group the {"node" if graph_type == "node_types" else "relation"} types so that the types in a single group have identical meaning.
-2. Group the {"node" if graph_type == "node_types" else "relation"} types and output a json. Also provide a new description for the new groups.
+    return f""""Node Type Grouping Task
 
-Example:
-{{"groups": [
+You are a sophisticated algorithm designed to identify and group node types with identical meanings to construct a knowledge graph. Your task is to analyze the provided node types and categorize them into groups based on their semantic equivalence.
+
+Instructions:
+
+Carefully examine the node types and identify patterns, relationships, and similarities between them.
+Group the node types into clusters where each group consists of types with identical.
+Avoid creating groups that are simply connected by a conjunction (e.g., "and", "or") unless the resulting group has a clear, unified meaning.
+
+Node Types:
+
+{", ".join(types)}
+
+Output Format:
+
+{{
+  "groups": [
     {{
-      "description": "A person or individual engaged in a field or activity",
-      "name": "Entity",
-      "sub_types": ["Person", "Practitioner"]
+      "description": "<brief description of the group>",
+      "name": "<group name>",
+      "sub_types": ["<list of sub-types>"]
     }},
- {{
-      "description": "Indicates the containment or location of something within a physical or conceptual space",
-      "name": "Location",
-      "sub_types": ["Location""]
+    {{
+      "description": "<brief description of the group>",
+      "name": "<group name>",
+      "sub_types": ["<list of sub-types>"]
     }}
-]
+  ]
 }}
+		
+Important Guidelines:
 
-{"Node types:" if graph_type == "node_types" else "Relation types"}
-{"\n".join(types)}
-
-Important:
-If types are dissimilar do not group them. 
-Return in json format:
+Group node types with identical. If they are only similar and not identical DO NOT group them together. 
+If a node type does not fit into any group, do not force it; instead, create a new group or leave it ungrouped.
+Return in Json.
 """

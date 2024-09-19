@@ -19,7 +19,7 @@ def chat_with_llama70(
         messages=[{"role": "user", "content": message}],
         temperature=0.2,
         top_p=0.7,
-        max_tokens=5000,
+        max_tokens=10000,
         stream=False
     )
 
