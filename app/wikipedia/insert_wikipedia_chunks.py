@@ -56,7 +56,6 @@ def insert_wikipedia_chunks(
             if qdrant:
                 qdrant_db.embedd_and_upsert_record(
                     value=chunk,
-                    value_type="chunk",
                     collection_name="chunks",
                     unique_id=unique_id,
                     metadata={"file_path": file_path_str},
