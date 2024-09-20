@@ -1,5 +1,10 @@
+from typing import List, Optional
+
+
 def extract_triplets_template(
-        text: str
+        text: str,
+        node_types: Optional[List[str]] = None,
+        rel_types: Optional[List[str]] = None,
 ) -> str:
     return f"""### Instructions
 

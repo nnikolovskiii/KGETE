@@ -8,8 +8,6 @@ from app.databases.qdrant_database.qdrant_database import SearchOutput, QdrantDa
 from app.templates.extract_triplets_template import extract_triplets_template
 from pydantic import BaseModel
 
-from app.utils.json_extraction import trim_and_load_json
-
 
 class SimpleOutput(SearchOutput):
     value: str

@@ -1,4 +1,4 @@
-from app.chains.extract_triplets_chain import extract_triplets_chain
+from app.chains.triplets.extract_triplets_chain import extract_triplets_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Chunk
 from tqdm import tqdm

@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from app.llms.generic.generic_chat import generic_chat
+from app.llms.generic_chat import generic_chat
 from app.utils.json_extraction import trim_and_load_json
 
 

@@ -3,9 +3,9 @@ from enum import Enum
 
 from dotenv import load_dotenv
 
-from app.llms.generic.nim_chat import chat_with_nim
-from app.llms.generic.ollama_chat import chat_with_ollama
-from app.llms.generic.openai_chat import chat_with_openai
+from app.llms.nim_chat import chat_with_nim
+from app.llms.ollama_chat import chat_with_ollama
+from app.llms.openai_chat import chat_with_openai
 
 
 class ChatModel(Enum):

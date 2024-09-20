@@ -1,4 +1,4 @@
-from app.llms.generic.generic_chat import generic_chat
+from app.llms.generic_chat import generic_chat
 from app.templates.summarize_template import summarize_template
 
 

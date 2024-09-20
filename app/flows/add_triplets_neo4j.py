@@ -1,4 +1,4 @@
-from app.chains.extract_triplets_chain import Triplet
+from app.chains.triplets.extract_triplets_chain import Triplet
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.neo4j_database.neo4j_database import Neo4jDataset, Node, Relationship
 from tqdm import tqdm

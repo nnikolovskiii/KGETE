@@ -37,4 +37,6 @@ Make the types abstract.
 Do not restrict yourself to the context and keywords, because they are just little part of the knowledge base.
 Try to assume what the other parts of the knowledge base are, and with that in mind create the node and relation types.
 Create as many types as you can think about. Do not limit yourself to numbers.
+Do not be limited to the keywords and context.
+Return in json with keys "node_types" and "relation_types"
 """

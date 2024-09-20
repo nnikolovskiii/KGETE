@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Dict, Any, Optional, TypeVar
 from qdrant_client import QdrantClient, models
-from app.llms.generic.openai_embedding import embedd_content
+from app.llms.openai_embedding import embedd_content
 from pydantic import BaseModel
 from qdrant_client.conversions import common_types as types
 
