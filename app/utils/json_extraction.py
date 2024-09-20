@@ -1,6 +1,5 @@
 import json
 from typing import Tuple, Any
-from langchain_experimental.graph_transformers import LLMGraphTransformer
 
 
 def trim_and_load_json(input_string: str, list_name: str = "") -> Tuple[bool, Any]:

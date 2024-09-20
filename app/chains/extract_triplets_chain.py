@@ -1,10 +1,10 @@
 from typing import Optional
 import uuid
+
+from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Chunk, Type
 from app.databases.qdrant_database.qdrant_database import SearchOutput, QdrantDatabase
-from app.llms.nim.chat import chat_with_llama70
-from app.llms.ollama.chat import chat_with_llama
 from app.templates.extract_triplets_template import extract_triplets_template
 from pydantic import BaseModel
 
@@ -29,16 +29,11 @@ def extract_triplets_chain(
         chunk: Chunk,
 ) -> None:
     mdb = MongoDBDatabase()
-    qdb = QdrantDatabase()
     template = extract_triplets_template(
         text=chunk.context,
     )
-    is_finished = False
-    json_data = {}
-    while not is_finished:
-        response = chat_with_llama70(message=template)
-        print(response)
-        is_finished, json_data = trim_and_load_json(response)
+
+    json_data = generic_chat_chain_json(template=template)
 
     if all(key in json_data for key in ["node_types", "relation_types", "triplets"]):
         node_types = json_data["node_types"]

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
-def chat_with_llama70(
+def chat_with_nim(
         message: str,
 ) -> str:
     load_dotenv()

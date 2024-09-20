@@ -1,4 +1,4 @@
-from app.llms.openai.chat import chat_with_openai
+from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.templates.qa_generation_template import qa_generation_template
 from pydantic import BaseModel
 
@@ -14,10 +14,5 @@ def qa_generation_chain(
         context: str
 ):
     template = qa_generation_template(context=context)
-
-    is_finished = False
-    json_data = ""
-    while not is_finished:
-        response = chat_with_openai(message=template)
-        is_finished, json_data = trim_and_load_json(response)
+    json_data = generic_chat_chain_json(template)
     return QAGenerationOutput(**json_data)

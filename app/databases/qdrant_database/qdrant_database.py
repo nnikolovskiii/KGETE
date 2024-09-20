@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Dict, Any, Optional, TypeVar
 from qdrant_client import QdrantClient, models
-from app.llms.openai.embedding import embedd_content
+from app.llms.generic.openai_embedding import embedd_content
 from pydantic import BaseModel
 from qdrant_client.conversions import common_types as types
 
@@ -35,7 +35,6 @@ class QdrantDatabase:
     def embedd_and_upsert_record(
             self,
             value: str,
-            value_type: str,
             collection_name: str,
             unique_id: str = None,
             metadata: Optional[Dict[str, Any]] = None
@@ -44,7 +43,6 @@ class QdrantDatabase:
             self.create_collection(collection_name)
 
         metadata = {} if metadata is None else metadata
-        metadata["value_type"] = value_type
         metadata["value"] = value
 
         vector = embedd_content(value)
@@ -84,19 +82,21 @@ class QdrantDatabase:
             collection_name: str,
             score_threshold: float,
             top_k: int,
-            filter_type: Optional[str] = None
+            filter: Optional[Dict[str, Any]] = None
     ) -> List[types.ScoredPoint]:
+        file_condition=None
+        if filter:
+            file_condition = models.Filter(must=[
+                models.FieldCondition(
+                    key=key,
+                    match=models.MatchValue(value=value),
+                )
+                for key, value in filter.items()])
+
         return self.client.search(
             query_vector=query_vector,
             score_threshold=score_threshold,
             collection_name=collection_name,
             limit=top_k,
-            query_filter=models.Filter(
-                must=[
-                    models.FieldCondition(
-                        key="value_type",
-                        match=models.MatchValue(value=filter_type),
-                    ),
-                ]
-            ),
+            query_filter=file_condition
         )

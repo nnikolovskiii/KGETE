@@ -1,5 +1,4 @@
 import uuid
-from enum import Enum
 from typing import List
 import re
 import wikipedia
@@ -12,18 +11,13 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 
 
-class DatabaseType(str, Enum):
-    postgres = 'mongodb'
-    qdrant = 'qdrant'
-
-
 def insert_wikipedia_chunks(
         file_path_str: str,
-        database_type: DatabaseType,
+        qdrant: bool,
         chunk_size: int = 2000,
         chunk_overlap: int = 300,
 ) -> None:
-    qdrant_db = QdrantDatabase() if database_type == DatabaseType.qdrant else None
+    qdrant_db = QdrantDatabase() if qdrant else None
     mongo_db = MongoDBDatabase()
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -51,7 +45,7 @@ def insert_wikipedia_chunks(
         mongo_db.add_entry(
             entity=document,
             metadata={
-                "file_path":file_path_str,
+                "file_path": file_path_str,
             }
         )
 
@@ -59,12 +53,13 @@ def insert_wikipedia_chunks(
 
         for chunk in tqdm(chunks, desc="Processing Chunks", leave=False):
             unique_id = str(uuid.uuid4())
-            if database_type == DatabaseType.qdrant:
+            if qdrant:
                 qdrant_db.embedd_and_upsert_record(
                     value=chunk,
                     value_type="chunk",
-                    collection_name="kg_llm_fusion",
+                    collection_name="chunks",
                     unique_id=unique_id,
+                    metadata={"file_path": file_path_str},
                 )
 
             mongo_db.add_entry(
