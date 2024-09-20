@@ -6,7 +6,7 @@ from app.chains.triplets.extract_triplets_from_general_chain import extract_trip
 from app.chains.type_extraction_from_keywords import type_extraction_from_keywords_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Type, Chunk
-from app.flows.types.insert_general_types import insert_general_types
+from app.flows.graph_types.insert_general_types import insert_general_types
 from app.ml_algorithms.tf_idf import get_context_from_top_keywords
 
 mdb = MongoDBDatabase()

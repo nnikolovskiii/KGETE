@@ -41,7 +41,7 @@ def type_extraction_from_keywords_chain(
         qdb = QdrantDatabase()
         [qdb.embedd_and_upsert_record(
             value=type.value+": "+type.description,
-            collection_name="types",
+            collection_name="graph_types",
             unique_id=type.id,
             metadata={
                 "name": type.value,

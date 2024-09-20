@@ -97,7 +97,7 @@ class PostgresDatabase:
 
     def get_types(self, group_id: str, value_type: str) -> List[str]:
         query = """
-            SELECT value FROM types
+            SELECT value FROM graph_types
             WHERE group_id = %s AND type = %s
         """
         self.cur.execute(query, (group_id, value_type))
@@ -131,7 +131,7 @@ class PostgresDatabase:
 
         query = """
             SELECT t.value
-            FROM types t
+            FROM graph_types t
             JOIN groups g ON t.group_id = g.id
             WHERE g.level = %s AND t.type = %s
         """
@@ -142,7 +142,7 @@ class PostgresDatabase:
 
         query = """
                     SELECT t.value
-                    FROM types t
+                    FROM graph_types t
                     JOIN groups g ON t.group_id = g.id
                     WHERE g.level = %s AND t.type = %s
                 """

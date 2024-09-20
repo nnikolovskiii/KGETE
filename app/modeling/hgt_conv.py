@@ -31,7 +31,7 @@ class HGTConv(MessagePassing):
             to the forward method.
         out_channels (int): Size of each output sample.
         metadata (Tuple[List[str], List[Tuple[str, str, str]]]): The metadata
-            of the heterogeneous graph, *i.e.* its node and edge types given
+            of the heterogeneous graph, *i.e.* its node and edge graph_types given
             by a list of strings and a list of string triplets, respectively.
             See :meth:`torch_geometric.data.HeteroData.metadata` for more
             information.
@@ -184,7 +184,7 @@ class HGTConv(MessagePassing):
 
         k_dict, q_dict, v_dict, out_dict = {}, {}, {}, {}
 
-        # Compute K, Q, V over node types:
+        # Compute K, Q, V over node graph_types:
         kqv_dict = self.kqv_lin(x_dict)
         for key, val in kqv_dict.items():
             k, q, v = torch.tensor_split(val, 3, dim=1)
@@ -215,7 +215,7 @@ class HGTConv(MessagePassing):
             for k, v in out_dict.items()
         })
 
-        # Iterate over node types:
+        # Iterate over node graph_types:
         for node_type, out in out_dict.items():
             out = a_dict[node_type]
 

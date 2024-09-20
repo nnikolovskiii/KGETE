@@ -7,7 +7,7 @@ from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Type
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 
-from app.flows.types.clustering_types import cluster_vectors
+from app.flows.graph_types.clustering_types import cluster_vectors
 
 
 def pack_items(ind_elements, max_capacity):

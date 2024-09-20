@@ -29,8 +29,8 @@ class GATConvE(MessagePassing):
     """
     Args:
         emb_dim (int): dimensionality of GNN hidden states
-        n_ntype (int): number of node types (e.g. 4)
-        n_etype (int): number of edge relation types (e.g. 38)
+        n_ntype (int): number of node graph_types (e.g. 4)
+        n_etype (int): number of edge relation graph_types (e.g. 38)
     """
 
     def __init__(self, emb_dim, n_ntype, n_etype, edge_encoder, head_count=4, aggr="add"):

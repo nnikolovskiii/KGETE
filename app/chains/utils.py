@@ -32,7 +32,7 @@ def save_group_and_types(
             type="node_type",
             value=node_type,
             group_id=group.id
-        ), table="types")
+        ), table="graph_types")
 
     for rel_type in types_output.rel_types:
         unique_id = str(uuid.uuid4())
@@ -41,6 +41,6 @@ def save_group_and_types(
             type="rel_type",
             value=rel_type,
             group_id=group.id
-        ), table="types")
+        ), table="graph_types")
 
     return True
