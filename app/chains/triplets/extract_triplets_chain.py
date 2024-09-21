@@ -17,10 +17,15 @@ class Triplet(BaseModel):
     id: Optional[str] = None
     head_value: str
     head_type: str
+    head_description: Optional[str] = None
     relation: str
     tail_value: str
     tail_type: str
+    tail_description: Optional[str] = None
     chunk_id: Optional[str] = None
+
+    def __str__(self) -> str:
+        return f"({self.head_value}: {self.head_type}) - [{self.relation}] → ({self.tail_value}: {self.tail_type})"
 
 
 def extract_triplets_chain(

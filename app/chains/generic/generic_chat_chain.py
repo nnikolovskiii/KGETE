@@ -1,4 +1,5 @@
 from typing import Any, Dict
+import logging
 
 from app.llms.generic_chat import generic_chat
 from app.utils.json_extraction import trim_and_load_json
@@ -14,6 +15,8 @@ def generic_chat_chain_json(
 
     while not is_finished:
         if tries > 3:
+            if tries > 0:
+                logging.warning("Chat not returning as expected.")
             raise Exception()
 
         response = generic_chat(message=template)

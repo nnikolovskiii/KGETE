@@ -1,8 +1,8 @@
 import uuid
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from tqdm import tqdm
 
-from app.chains.group_types_chain import group_types_chain, GroupType
+from app.chains.graph_types.group_types_chain import group_types_chain, GroupType
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Type
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase

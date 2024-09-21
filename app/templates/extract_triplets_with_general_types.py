@@ -15,21 +15,19 @@ def extract_triplets_from_general_template(
 
     {{
       "triplets": [
-      {{
-        "head_type": "Artifact",
-        "head_value": "Pots of Honey",
-        "relation": "Discovered In",
-        "tail_type": "Location",
-        "tail_value": "Ancient Egyptian Tombs"
-      }},
-      {{
-        "head_type": "Artifact",
-        "head_value": "Pots of Honey",
-        "relation": "Has Property",
-        "tail_type": "Property",
-        "tail_value": "Edible"
-      }},
-    ]
+          {{
+            "head_type": "Artifact",
+            "head_value": "Pots of Honey",
+            "relation": "Discovered In",
+            "tail_type": "Location",
+            "tail_value": "Ancient Egyptian Tombs"
+          }},
+        ],
+     "descriptions": [
+        "Pots of Honey": "Pots of Honey are ancient or historical containers used to store honey...",
+        "Ancient Egyptian Tombs": "Ancient Egyptian Tombs are burial sites used to house the remains of the deceased..."
+        }}
+      ],
     }}
 
     ### Text:
@@ -47,20 +45,25 @@ def extract_triplets_from_general_template(
     Important: You MUST use the given relation types for generating the triplets
 
     ### Important instructions
-        - If you can not create triplets from the give node and relation types do not create triplets.
         - You must stick to the node and relation types. NEVER use your own types.
-        - Create simple and abstract node and relationship types. Create simple and abstract triplets.
         - The values of the triplets need to be not too long, and consisting of a single thing.
         - NEVER use more than three words for node and rel values unless it they are a named entity.
         - NEVER make the node and rel values a description. Make then a single thing.
         - Create as many triplets as you can think about. Do not limit yourself to numbers.
         - Keep in mind the direction of the relation. Square IsA Rectangle is correct, but Rectangle IsA Square is not correct.
         - Return in json with keys 'triplets' 
-        {{
-        "head_type": ...
-        "head_value": ...
-        "relation": ...
-        "tail_type": ...
-        "tail_value": ...
+    {{
+        "triplets": [
+            {{
+            "head_type": ...
+            "head_value": ...
+            "relation": ...
+            "tail_type": ...
+            "tail_value": ...
+            }}
+        ],
+        "descriptions": [
+            "node_value": "description"
+        ],
       }},
     """

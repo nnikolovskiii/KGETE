@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-from app.chains.group_types_chain import group_types_chain
-from app.chains.types_extraction_chain import node_rel_type_extraction_chain
+from app.chains.graph_types.group_types_chain import group_types_chain
+from app.chains.graph_types.types_extraction_chain import node_rel_type_extraction_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Chunk
 

@@ -14,6 +14,9 @@ def get_top_keywords(num: int) -> List[str]:
     mdb = MongoDBDatabase()
     chunks = mdb.get_entries(Chunk)
 
+    if len(chunks) == 0:
+        raise Exception()
+
     text = " ".join([chunk.context for chunk in chunks])
 
     nltk.download('punkt_tab')
@@ -64,7 +67,7 @@ def get_context_from_top_keywords(
 
         points = qdb.search_embeddings(
             query_vector=point.vector,
-            collection_name="Chunks",
+            collection_name="chunks",
             score_threshold=0.2,
             top_k=top_k,
         )
