@@ -23,13 +23,14 @@ if len(general_type_list) == 0:
     )
 
     general_type_list: List[Type] = mdb.get_entries(class_type=Type, doc_filter={'general': True})
+    print(len(general_type_list))
 
 node_types = [type.value for type in general_type_list if type.type == "node_type"]
 rel_types = [type.value for type in general_type_list if type.type == "rel_type"]
 
 chunks = mdb.get_entries(class_type=Chunk)
 
-for chunk in tqdm(chunks[1200:], desc="Extracting triplets from chunks"):
+for chunk in tqdm(chunks[70+45+68+51:], desc="Extracting triplets from chunks"):
     extract_triplets_from_general_chain(
         chunk = chunk,
         node_types = node_types,

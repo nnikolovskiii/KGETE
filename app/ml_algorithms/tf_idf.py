@@ -64,7 +64,7 @@ def get_context_from_top_keywords(
 
         points = qdb.search_embeddings(
             query_vector=point.vector,
-            collection_name="chunks",
+            collection_name="Chunks",
             score_threshold=0.2,
             top_k=top_k,
         )

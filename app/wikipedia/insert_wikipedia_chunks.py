@@ -53,13 +53,6 @@ def insert_wikipedia_chunks(
 
         for chunk in tqdm(chunks, desc="Processing Chunks", leave=False):
             unique_id = str(uuid.uuid4())
-            if qdrant:
-                qdrant_db.embedd_and_upsert_record(
-                    value=chunk,
-                    collection_name="chunks",
-                    unique_id=unique_id,
-                    metadata={"file_path": file_path_str},
-                )
 
             mongo_db.add_entry(
                 entity=Chunk(id=unique_id, doc_id=document.id, context=chunk),
