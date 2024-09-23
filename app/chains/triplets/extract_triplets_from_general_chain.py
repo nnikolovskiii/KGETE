@@ -5,8 +5,9 @@ import logging
 from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.chains.generic.models import Database
 from app.chains.triplets.extract_triplets_chain import Triplet
+from app.chains.utils.create_description_chain import create_description_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
-from app.databases.postgres_database.postgres import Chunk, Type
+from app.databases.postgres_database.postgres import Chunk
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 from app.templates.extract_triplets_with_general_types import extract_triplets_from_general_template
 
@@ -29,22 +30,20 @@ def extract_triplets_from_general_chain(
     if "triplets" in json_data:
         triplets = [Triplet(**triplet) for triplet in json_data["triplets"]]
 
-    if "descriptions" in json_data:
-        descr_dict = json_data["descriptions"]
+        terms = set()
+        terms.update([triplet.head_value for triplet in triplets])
+        terms.update([triplet.tail_value for triplet in triplets])
+        term_descr_pairs = create_description_chain(
+            context=chunk.context,
+            terms=list(terms)
+        )
 
         for triplet in triplets:
-            head_value = triplet.head_value
-            tail_value = triplet.tail_value
-            if head_value in list(descr_dict.keys()):
-                triplet.head_description = descr_dict[head_value]
-            else:
-                logging.warning(f"No description found for triplet: {triplet}, head_value: {head_value}")
+            triplet.head_description = term_descr_pairs[triplet.head_value]
+            triplet.tail_description = term_descr_pairs[triplet.tail_value]
 
-            if tail_value in list(descr_dict.keys()):
-                triplet.tail_description = descr_dict[tail_value]
-            else:
-                logging.warning(f"No description found for triplet: {triplet}, head_value: {tail_value}")
-
+    else:
+        raise Exception("Badly generated response from llm. No key triplets.")
 
     # databases
     if not databases:

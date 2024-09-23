@@ -1,6 +1,6 @@
 import random
 
-from app.chains.qa_generation_chain import qa_generation_chain
+from app.chains.testset.qa_generation_chain import qa_generation_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Chunk
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase

@@ -32,6 +32,7 @@ if len(keywords_type_list) == 0:
     )
 
 general_type_list: List[Type] = mdb.get_entries(class_type=Type, doc_filter={'general': True})
+print('\n'.join([type.value + " " + type.type for type in general_type_list]))
 
 node_types = [type.value for type in general_type_list if type.type == "node_type"]
 rel_types = [type.value for type in general_type_list if type.type == "rel_type"]
@@ -44,9 +45,9 @@ for chunk in tqdm(chunks, desc="Extracting triplets from chunks"):
             chunk=chunk,
             node_types=node_types,
             rel_types=rel_types,
-            databases=[Database.MONGO, Database.QDRANT]
+            databases=[Database.MONGO]
         )
     except Exception as e:
-        logging.warning(f"Chunk isn't processed {chunk.id}")
+        logging.warning(f"Chunk isn't processed {chunk.id}, exception {e}")
         continue
 

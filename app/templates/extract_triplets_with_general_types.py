@@ -23,11 +23,6 @@ def extract_triplets_from_general_template(
             "tail_value": "Ancient Egyptian Tombs"
           }},
         ],
-     "descriptions": [
-        "Pots of Honey": "Pots of Honey are ancient or historical containers used to store honey...",
-        "Ancient Egyptian Tombs": "Ancient Egyptian Tombs are burial sites used to house the remains of the deceased..."
-        }}
-      ],
     }}
 
     ### Text:
@@ -45,10 +40,8 @@ def extract_triplets_from_general_template(
     Important: You MUST use the given relation types for generating the triplets
 
     ### Important instructions
-        - You must stick to the node and relation types. NEVER use your own types.
-        - The values of the triplets need to be not too long, and consisting of a single thing.
         - NEVER use more than three words for node and rel values unless it they are a named entity.
-        - NEVER make the node and rel values a description. Make then a single thing.
+        - NEVER make the node and rel values a description. Make then a single thing. Make them SHORT.
         - Create as many triplets as you can think about. Do not limit yourself to numbers.
         - Keep in mind the direction of the relation. Square IsA Rectangle is correct, but Rectangle IsA Square is not correct.
         - Return in json with keys 'triplets' 
@@ -61,9 +54,6 @@ def extract_triplets_from_general_template(
             "tail_type": ...
             "tail_value": ...
             }}
-        ],
-        "descriptions": [
-            "node_value": "description"
         ],
       }},
     """

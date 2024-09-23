@@ -14,6 +14,9 @@ def generic_chat_chain_json(
     tries = 0
 
     while not is_finished:
+        if tries > 0:
+            logging.warning(f"Chat not returning as expected. it: {tries}")
+
         if tries > 3:
             if tries > 0:
                 logging.warning("Chat not returning as expected.")
