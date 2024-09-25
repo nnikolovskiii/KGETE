@@ -12,6 +12,23 @@ from pydantic import BaseModel
 class SimpleOutput(SearchOutput):
     value: str
 
+class Node(BaseModel):
+    id: str
+    value: str
+    type: str
+    description: str
+    triplet_id: str
+
+    class Config:
+        frozen = True
+
+    def __hash__(self):
+        return hash((self.value, self.type, self.description))
+
+    def __eq__(self, other):
+        if isinstance(other, Node):
+            return (self.value, self.type, self.description) == (other.value, other.type, other.description)
+        return False
 
 class Triplet(BaseModel):
     id: Optional[str] = None
@@ -26,6 +43,11 @@ class Triplet(BaseModel):
 
     def __str__(self) -> str:
         return f"({self.head_value}: {self.head_type}) - [{self.relation}] → ({self.tail_value}: {self.tail_type})"
+
+    def str_with_description(self) -> str:
+        head = f"Node{{value:{self.head_value}, type:{self.head_type}, description:{self.head_description}}}"
+        tail = f"Node{{value:{self.tail_value}, type:{self.tail_type}, description:{self.tail_description}}}"
+        return head + "\n" + tail
 
 
 def extract_triplets_chain(

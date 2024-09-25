@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+import logging
+from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import Optional, Any, List, Dict, TypeVar
 from typing import Type as TypingType
@@ -111,3 +112,10 @@ class MongoDBDatabase:
         )
 
         return result.modified_count > 0
+
+    def delete_collection(self, collection_name: str) -> bool:
+        if collection_name not in self.db.list_collection_names():
+            logging.info(f"Collection '{collection_name}' does not exist.")
+
+        self.db[collection_name].drop()
+        return True

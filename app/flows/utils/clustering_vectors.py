@@ -7,9 +7,9 @@ from tqdm import tqdm
 
 def recursive_clustering(
         vectors: np.ndarray,
-        vector_ids_dict: Dict[Tuple[float], int],
-        max_size: int = 20,
-) -> List[int]:
+        vector_ids_dict: Dict[Tuple[float], str],
+        max_size: int,
+) -> List[List[str]]:
     clusters = []
     cluster_model = AgglomerativeClustering(metric="cosine", linkage="average")
     cluster_labels = cluster_model.fit_predict(vectors)
@@ -30,18 +30,44 @@ def recursive_clustering(
 
     return clusters
 
+def pack_items(ind_elements, max_capacity):
+    ind_elements.sort(key=lambda x: x[1], reverse=True)
+
+    bags = []
+
+    for ind, element in ind_elements:
+        placed = False
+        for bag in bags:
+            if sum([elem for ind, elem in bag]) + element <= max_capacity:
+                bag.append((ind, element))
+                placed = True
+                break
+
+        if not placed:
+            bags.append([(ind, element)])
+
+    return bags
 
 def cluster_vectors(
-        vector_ids: List[int],
-        qdb: QdrantDatabase
-) -> List[List[int]]:
-    vector_ids_dict: Dict[Tuple[float], int] = {}
+        vector_ids: List[str],
+        qdb: QdrantDatabase,
+        max_size: int = 20
+) -> List[List[str]]:
+    vector_ids_dict: Dict[Tuple[float], str] = {}
 
     for type_id in tqdm(vector_ids):
         point = qdb.retrieve_point(collection_name="kg_llm_fusion", point_id=type_id)
         vector_ids_dict[tuple(point.vector)] = type_id
 
     vectors = np.array([key for key, value in vector_ids_dict.items()])
-    clusters = recursive_clustering(vectors, vector_ids_dict)
+    clusters = recursive_clustering(vectors, vector_ids_dict, max_size=max_size)
 
-    return clusters
+    cluster_sizes: List[Tuple[int, int]] = [(ind, len(cluster)) for ind, cluster in enumerate(clusters)]
+    cluster_groups = pack_items(ind_elements=cluster_sizes, max_capacity=22)
+
+    new_clusters: List[List[str]] = []
+
+    for cluster_group in cluster_groups:
+        new_clusters.append([x for ind, _ in cluster_group for x in clusters[ind]])
+
+    return new_clusters

@@ -4,3 +4,4 @@ __pycache__/
 .idea/
 app/chains/__pycache__/
 app/templates/__pycache__/
+data/*

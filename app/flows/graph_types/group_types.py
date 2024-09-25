@@ -7,26 +7,7 @@ from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Type
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 
-from app.flows.graph_types.clustering_types import cluster_vectors
-
-
-def pack_items(ind_elements, max_capacity):
-    ind_elements.sort(key=lambda x: x[1], reverse=True)
-
-    bags = []
-
-    for ind, element in ind_elements:
-        placed = False
-        for bag in bags:
-            if sum([elem for ind, elem in bag]) + element <= max_capacity:
-                bag.append((ind, element))
-                placed = True
-                break
-
-        if not placed:
-            bags.append([(ind, element)])
-
-    return bags
+from app.flows.utils.clustering_vectors import cluster_vectors
 
 
 mdb = MongoDBDatabase()
@@ -41,16 +22,6 @@ clusters:List[List[str]] = cluster_vectors(
     qdb=qdb,
 )
 
-cluster_sizes: List[Tuple[int,int]] = [(ind, len(cluster)) for ind, cluster in enumerate(clusters)]
-cluster_groups = pack_items(ind_elements=cluster_sizes, max_capacity=22)
-
-new_clusters:List[List[str]] = []
-
-for cluster_group in cluster_groups:
-    new_clusters.append([x for ind, _ in cluster_group for x in clusters[ind]])
-
-clusters = new_clusters
-
 clusters_types = [[mdb.get_entity(type_id, class_type=Type, collection_name="UniqueTypes") for type_id in cluster] for cluster in clusters]
 
 for cluster_num, cluster in tqdm(enumerate(clusters_types), desc="Processing Clusters", total=len(clusters_types)):
@@ -64,7 +35,6 @@ for cluster_num, cluster in tqdm(enumerate(clusters_types), desc="Processing Clu
         mdb.add_entry(parent_type, collection_name="UniqueTypes" ,metadata={"group": 1})
         qdb.embedd_and_upsert_record(
             value=str(parent_type),
-            value_type=parent_type.type,
             collection_name="kg_llm_fusion",
             unique_id=parent_id,
             metadata={
@@ -74,6 +44,7 @@ for cluster_num, cluster in tqdm(enumerate(clusters_types), desc="Processing Clu
             }
         )
 
+        # noinspection PyTypeChecker
         sub_types: List[Type] = [type_dict[type_name] for type_name in group_str.sub_types if type_name in type_dict]
 
         group_id = str(uuid.uuid4())

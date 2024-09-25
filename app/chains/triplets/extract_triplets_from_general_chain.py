@@ -56,17 +56,23 @@ def extract_triplets_from_general_chain(
             unique_id = str(uuid.uuid4())
             triplet.id = unique_id
             triplet.chunk_id = chunk.id
-            mdb.add_entry(entity=triplet, metadata={'chunk': chunk.id, 'version': '3'})
+            mdb.add_entry(entity=triplet, metadata={'chunk': chunk.id, 'version': '4'})
 
     if Database.QDRANT in databases:
         qdb = QdrantDatabase()
 
         for triplet in triplets:
             qdb.embedd_and_upsert_record(
-                value=f"{triplet.head_value}: {triplet.head_description}",
-                collection_name="triplets",
+                value=f"Name:{triplet.head_value}\nType:{triplet.head_type}\nDescription:{triplet.head_description}",
+                collection_name="nodes",
                 unique_id=triplet.id,
-                metadata={"version": "3"}
+                metadata={"version": "4"}
+            )
+            qdb.embedd_and_upsert_record(
+                value=f"Name:{triplet.tail_value}\nType:{triplet.tail_type}\nDescription:{triplet.tail_description}",
+                collection_name="nodes",
+                unique_id=triplet.id,
+                metadata={"version": "4"}
             )
 
     return triplets

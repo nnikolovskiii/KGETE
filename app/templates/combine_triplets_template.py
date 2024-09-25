@@ -2,39 +2,39 @@ from typing import List
 
 
 def combine_triplets_template(
-        contexts: List[str],
-        triplets: List[str],
+        nodes: str,
 ) -> str:
-    return f""""Given the provided context and nodes and relationships, try to combine and reduce nodes that mean the same thing, but are worded differently.
+    return f""""Given the provided nodes and there descriptions, try to combine and reduce nodes that mean the same thing, but are worded differently.
     
 Example:
-Nodes "Poland" and "Country of Poland" -> "Poland"
+{{
+    "reduced_nodes_li":[{{
+        "reasoning": "Both terms refer to the same landmass located in Central Europe."
+        "description": "Poland is a country in Central Europe known for its rich history, medieval architecture, diverse landscapes, and vibrant cultural heritage."
+        "new_node": "Poland",
+        "reduced_nodes": ["Republic of Poland", "Country of Poland"]
+    }}]
+}}
 
-START CONTEXT
 
-{"\n".join(contexts)}
+Nodes:
+[{nodes}]
 
-END CONTEXT
-
-START TRIPLETS
-
-[{"\n".join(triplets)}]
-
-END TRIPLETS
     
 Instructions:
-    - Never create new relationships and nodes, just reduce and combine the already given. Create only reduced nodes.
-    - Base the meaning of the triplets from the context. The triplets were created from the context, so you can use it as a string guideline.
-
+    - Create only reduced nodes. If there is a node that cannot be reduced do not add it to the response.
+    - Use the description and node types as the only source of knowledge for reducing the nodes.
+    - Return in json
 
 Output Format:
 
 {{
-  "groups": [
-    {{
-      "name": "<reduced node name>",
-      "sub_nodes": ["<list of nodes that were reduced>"]
-    }},
-  ]
+    "reduced_nodes_li":[{{
+        "reasoning": ...
+        "new_node": ...,
+        "description": ...
+        "reduced_nodes": [...]
+    }}
+    ]
 }}
 """
