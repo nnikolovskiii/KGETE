@@ -119,3 +119,20 @@ class MongoDBDatabase:
 
         self.db[collection_name].drop()
         return True
+
+    def delete_entity(
+            self,
+            entity: BaseModel,
+            collection_name: Optional[str] = None
+    ) -> bool:
+        collection_name = entity.__class__.__name__ if collection_name is None else collection_name
+        collection = self.db[collection_name]
+
+        entity_id = entity.id if hasattr(entity, "id") else None
+        if not entity_id:
+            raise ValueError("The entity must have an 'id' field to delete.")
+
+        result = collection.delete_one({"id": entity_id})
+
+        return result.deleted_count > 0
+

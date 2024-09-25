@@ -29,7 +29,6 @@ def insert_triplets():
 
     while True:
         node_records = qdb.get_all_points(collection_name="nodes", filter={"node_type": "tail"})
-        node_records = qdb.get_all_points(collection_name="nodes", filter={"node_type": "head"})
         embedded_node_ids = [record.id for record in node_records]
         nodes = mdb.get_entries(class_type=Node, doc_filter={"node_type": "tail"})
         not_embedded_nodes = [node for node in nodes if node.id not in embedded_node_ids]
@@ -49,7 +48,7 @@ def insert_triplets():
                 qdb.embedd_and_upsert_record(
                     value=f"{node.value}:{node.description}",
                     collection_name="nodes",
-                    unique_id=str(uuid.uuid4()),
+                    unique_id=node.id,
                     metadata={"node_type":"tail"}
                 )
             except Exception as e:

@@ -4,29 +4,51 @@ from sklearn.cluster import AgglomerativeClustering
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 from tqdm import tqdm
 
+import numpy as np
+from typing import List, Dict, Tuple
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics.pairwise import cosine_distances
 
-def recursive_clustering(
+
+
+def divisive_clustering(
         vectors: np.ndarray,
         vector_ids_dict: Dict[Tuple[float], str],
-        max_size: int,
+        max_size: int
 ) -> List[List[str]]:
     clusters = []
-    cluster_model = AgglomerativeClustering(metric="cosine", linkage="average")
-    cluster_labels = cluster_model.fit_predict(vectors)
+    queue = [vectors]  # Start with all vectors in one cluster
 
-    label_to_vectors = {}
-    for i, label in enumerate(cluster_labels):
-        if label not in label_to_vectors:
-            label_to_vectors[label] = []
-        label_to_vectors[label].append(vectors[i])
+    while queue:
+        current_vectors = queue.pop(0)  # Process the current cluster
+        print(f"Processing cluster with {len(current_vectors)} vectors")
 
-    for label, grouped_vectors in label_to_vectors.items():
-        cluster_size = len(grouped_vectors)
-        if cluster_size <= max_size:
-            clusters.append([vector_ids_dict[tuple(vector)] for vector in grouped_vectors])
-        elif cluster_size > max_size:
-            sub_clusters = recursive_clustering(np.array(grouped_vectors), vector_ids_dict, max_size)
-            clusters.extend(sub_clusters)
+        if len(current_vectors) <= max_size:
+            print(f"Cluster is small enough, adding to final clusters")
+            clusters.append([vector_ids_dict[tuple(vector)] for vector in current_vectors])
+        else:
+            print(f"Cluster too large, splitting...")
+
+            # Compute cosine distances for the cluster
+            distances = cosine_distances(current_vectors)
+
+            # Find the two most dissimilar points (maximum distance)
+            farthest_points = np.unravel_index(np.argmax(distances), distances.shape)
+            point1, point2 = current_vectors[farthest_points[0]], current_vectors[farthest_points[1]]
+
+            # Split the cluster based on proximity to the farthest points
+            group1, group2 = [], []
+            for vector in current_vectors:
+                dist_to_p1 = np.linalg.norm(vector - point1)
+                dist_to_p2 = np.linalg.norm(vector - point2)
+                if dist_to_p1 < dist_to_p2:
+                    group1.append(vector)
+                else:
+                    group2.append(vector)
+
+            # Add the new clusters to the queue for further processing
+            queue.append(np.array(group1))
+            queue.append(np.array(group2))
 
     return clusters
 
@@ -56,11 +78,11 @@ def cluster_vectors(
     vector_ids_dict: Dict[Tuple[float], str] = {}
 
     for type_id in tqdm(vector_ids):
-        point = qdb.retrieve_point(collection_name="kg_llm_fusion", point_id=type_id)
+        point = qdb.retrieve_point(collection_name="nodes", point_id=type_id)
         vector_ids_dict[tuple(point.vector)] = type_id
 
     vectors = np.array([key for key, value in vector_ids_dict.items()])
-    clusters = recursive_clustering(vectors, vector_ids_dict, max_size=max_size)
+    clusters = divisive_clustering(vectors, vector_ids_dict, max_size=max_size)
 
     cluster_sizes: List[Tuple[int, int]] = [(ind, len(cluster)) for ind, cluster in enumerate(clusters)]
     cluster_groups = pack_items(ind_elements=cluster_sizes, max_capacity=22)

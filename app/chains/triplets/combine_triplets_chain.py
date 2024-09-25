@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 class ReducedNode(BaseModel):
     id: str
+    new_node: str
     description: str
     reasoning: str
     reduced_nodes: List[str]
@@ -37,6 +38,7 @@ def combine_triplets_chain(
         description=reduced_node["description"],
         reasoning=reduced_node["reasoning"],
         reduced_nodes=reduced_node["reduced_nodes"],
+        new_node=reduced_node["new_node"]
     ) for reduced_node in json_data["reduced_nodes_li"]]
 
     # databases

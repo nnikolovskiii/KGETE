@@ -141,6 +141,19 @@ class QdrantDatabase:
             ),]
         )
 
+    def delete_points(
+            self,
+            collection_name: str,
+            filter: Optional[Dict[str, Any]] = None
+    ):
+        field_condition = QdrantDatabase._generate_filter(filter=filter)
+        self.client.delete(
+            collection_name=collection_name,
+            points_selector=models.FilterSelector(
+                filter=field_condition
+            ),
+        )
+
     @staticmethod
     def _generate_filter(filter:Optional[Dict[str, Any]] = None):
         field_condition = None
