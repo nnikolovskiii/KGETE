@@ -1,6 +1,6 @@
 from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.chains.utils import save_group_and_types, TypesOutput
-from app.templates.node_rel_type_extraction import node_rel_type_extraction_template
+from app.templates.graph_types.node_rel_type_extraction import node_rel_type_extraction_template
 
 
 def node_rel_type_extraction_chain(

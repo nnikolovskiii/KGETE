@@ -7,7 +7,7 @@ from app.chains.generic.models import Database
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Type
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
-from app.templates.type_extraction_from_keywords import type_extraction_from_keywords_template
+from app.templates.graph_types.type_extraction_from_keywords import type_extraction_from_keywords_template
 
 
 def type_extraction_from_keywords_chain(

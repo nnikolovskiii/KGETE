@@ -2,9 +2,8 @@ from typing import List
 
 from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.databases.postgres_database.postgres import Type
-from app.templates.group_types_template import group_types_template
+from app.templates.graph_types.group_types_template import group_types_template
 from pydantic import BaseModel
-from app.utils.json_extraction import trim_and_load_json
 
 
 class GroupTypeString(BaseModel):

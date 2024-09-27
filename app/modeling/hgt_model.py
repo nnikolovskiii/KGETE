@@ -4,18 +4,9 @@ import torch
 from torch_geometric.nn import HGTConv, Linear
 
 
-class Edge(BaseModel):
-    from_node_type: str
-    rel_type: str
-    to_node_type: str
-
-    class Config:
-        frozen = True
-
-
 class GraphMetadata(BaseModel):
     node_types: List[str]
-    edge_types: List[Edge]
+    edge_types: List[Tuple[str,str,str]]
     num_nodes_dict: Dict[str, int]
 
 

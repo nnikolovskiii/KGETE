@@ -23,18 +23,6 @@ services:
       - neo4j_import:/var/lib/neo4j_database/import
       - neo4j_plugins:/plugins
 
-  postgres:
-    image: postgres:latest
-    container_name: my_postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: kg_llm_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -62,5 +50,4 @@ volumes:
   neo4j_logs:
   neo4j_import:
   neo4j_plugins:
-  postgres_data:
   mongo_data:

@@ -9,7 +9,7 @@ from app.chains.utils.create_description_chain import create_description_chain
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.postgres_database.postgres import Chunk
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
-from app.templates.extract_triplets_with_general_types import extract_triplets_from_general_template
+from app.templates.triplets.extract_triplets_with_general_types import extract_triplets_from_general_template
 
 
 def extract_triplets_from_general_chain(

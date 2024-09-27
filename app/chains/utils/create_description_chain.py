@@ -1,6 +1,6 @@
 from typing import List, Dict
 from app.chains.generic.generic_chat_chain import generic_chat_chain_json
-from app.templates.create_description_template import create_description_template
+from app.templates.utils.create_description_template import create_description_template
 
 
 def create_description_chain(

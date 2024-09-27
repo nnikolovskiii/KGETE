@@ -154,6 +154,19 @@ class QdrantDatabase:
             ),
         )
 
+    def update_point(
+            self,
+            collection_name: str,
+            id: str,
+            update: Dict[str, Any]
+    ):
+        self.client.set_payload(
+            collection_name=collection_name,
+            wait=True,
+            payload=update,
+            points=[id]
+        )
+
     @staticmethod
     def _generate_filter(filter:Optional[Dict[str, Any]] = None):
         field_condition = None

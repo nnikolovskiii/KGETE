@@ -3,9 +3,9 @@ import uuid
 
 from app.chains.generic.generic_chat_chain import generic_chat_chain_json
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
-from app.databases.postgres_database.postgres import Chunk, Type
-from app.databases.qdrant_database.qdrant_database import SearchOutput, QdrantDatabase
-from app.templates.extract_triplets_template import extract_triplets_template
+from app.databases.qdrant_database.qdrant_database import SearchOutput
+from app.models.models import Chunk, Type
+from app.templates.triplets.extract_triplets_template import extract_triplets_template
 from pydantic import BaseModel
 
 
@@ -21,6 +21,9 @@ class Node(BaseModel):
 
     class Config:
         frozen = True
+
+    def __str__(self):
+        return f"""{self.value}, {self.type}, {self.description}"""
 
     def __hash__(self):
         return hash((self.value, self.type, self.description))

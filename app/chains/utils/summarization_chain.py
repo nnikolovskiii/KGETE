@@ -1,5 +1,5 @@
 from app.llms.generic_chat import generic_chat
-from app.templates.summarize_template import summarize_template
+from app.templates.utils.summarize_template import summarize_template
 
 
 def summarization_chain(
