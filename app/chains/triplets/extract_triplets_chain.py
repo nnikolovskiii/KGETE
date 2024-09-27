@@ -18,6 +18,8 @@ class Node(BaseModel):
     type: str
     description: str
     triplet_id: str
+    parent_node: Optional[str] = None
+    latest: Optional[bool] = False
 
     class Config:
         frozen = True
