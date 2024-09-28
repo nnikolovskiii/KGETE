@@ -20,8 +20,11 @@ def combine_nodes():
         node = mdb.get_entity(id=id, class_type=Node)
         if not node.latest:
             continue
-
-        point = qdb.retrieve_point(collection_name="nodes", point_id=id)
+        try:
+            point = qdb.retrieve_point(collection_name="nodes", point_id=id)
+        except Exception as e:
+            print("Id not recognized")
+            continue
 
         similar_points = qdb.search_embeddings(
             query_vector=point.vector,
