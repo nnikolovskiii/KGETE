@@ -19,7 +19,7 @@ class QdrantDatabase:
     client: QdrantClient
 
     def __init__(self):
-        self.client = QdrantClient(url="http://mkpatka.duckdns.org:6333")
+        self.client = QdrantClient(url="http://localhost:6333")
 
     def collection_exists(self, collection_name: str) -> bool:
         return self.client.collection_exists(collection_name)
