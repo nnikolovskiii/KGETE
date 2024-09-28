@@ -7,7 +7,7 @@ from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 
 from tqdm import tqdm
-from typing import Set, Tuple, List
+from typing import Set, Tuple
 
 
 def combine_nodes():
@@ -156,4 +156,5 @@ def get_parent(
     return node
 
 
-print(check())
+check()
+combine_nodes()
