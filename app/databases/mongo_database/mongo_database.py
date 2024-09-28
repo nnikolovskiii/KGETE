@@ -12,7 +12,7 @@ class MongoDBDatabase:
     db: Any
 
     def __init__(self):
-        self.client = MongoClient("mongodb://root:example@localhost:27017/")
+        self.client = MongoClient("mongodb://root:example@mkpatka.duckdns.org:27017/")
         self.db = self.client["kg_llm_db"]
 
     def add_entry(

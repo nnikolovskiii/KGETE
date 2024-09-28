@@ -12,12 +12,13 @@ from pydantic import BaseModel
 class SimpleOutput(SearchOutput):
     value: str
 
+
 class Node(BaseModel):
-    id: str
+    id: Optional[str] = None
     value: str
     type: str
     description: str
-    triplet_id: str
+    triplet_id: Optional[str] = None
     parent_node: Optional[str] = None
     latest: Optional[bool] = False
 
