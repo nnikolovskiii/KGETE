@@ -7,9 +7,9 @@ from tqdm import tqdm
 
 from app.chains.generic.models import Database
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
-from app.databases.postgres_database.postgres import Document, Chunk
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
+from app.models.models import Chunk, Document
 
 
 def insert_wikipedia_chunks(
