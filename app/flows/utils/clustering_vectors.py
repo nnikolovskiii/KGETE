@@ -78,7 +78,7 @@ def cluster_vectors(
     vector_ids_dict: Dict[Tuple[float], str] = {}
 
     for type_id in tqdm(vector_ids):
-        point = qdb.retrieve_point(collection_name="nodes", point_id=type_id)
+        point = qdb.retrieve_point(collection_name="nodes_rels", point_id=type_id)
         vector_ids_dict[tuple(point.vector)] = type_id
 
     vectors = np.array([key for key, value in vector_ids_dict.items()])

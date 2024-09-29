@@ -62,7 +62,7 @@ class GreaseLM(nn.Module):
         concept_ids: (batch_size, num_choice, n_node)  -> (batch_size * num_choice, n_node)
         node_type_ids: (batch_size, num_choice, n_node) -> (batch_size * num_choice, n_node)
         node_scores: [bs, nc, n_node, 1]
-        adj_lengths: means the "actual" number of nodes (excluding padding)(batch_size, num_choice)          -> (batch_size * num_choice, )
+        adj_lengths: means the "actual" number of nodes_rels (excluding padding)(batch_size, num_choice)          -> (batch_size * num_choice, )
         adj -> edge_index, edge_type
             edge_index: list of (batch_size, num_choice) -> list of (batch_size * num_choice, ); each entry is torch.tensor(2, E(variable))
                                                          -> (2, total E)
@@ -250,7 +250,7 @@ class LMGNN(nn.Module):
         mask = torch.arange(node_type_ids.size(1), device=node_type_ids.device) >= adj_lengths.unsqueeze(
             1)  # 1 means masked out
 
-        mask = mask | (node_type_ids == 3)  # pool over all KG nodes (excluding the context node)
+        mask = mask | (node_type_ids == 3)  # pool over all KG nodes_rels (excluding the context node)
         mask[mask.all(1), 0] = 0  # a temporary solution to avoid zero node
 
         sent_vecs_for_pooler = sent_vecs

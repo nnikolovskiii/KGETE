@@ -23,7 +23,7 @@ clusters:List[List[str]] = cluster_vectors(
     qdb=qdb,
 )
 
-for cluster in tqdm(clusters[:10], desc="Reducing nodes"):
+for cluster in tqdm(clusters[:10], desc="Reducing nodes_rels"):
     cluster_nodes = [mdb.get_entity(id=id, class_type=Node) for id in cluster]
     nodes = "\n".join([str(node) for node in cluster_nodes])
 

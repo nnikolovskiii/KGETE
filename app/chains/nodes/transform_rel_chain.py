@@ -13,7 +13,7 @@ from app.templates.nodes.transform_rel_template import transform_rel_template
 
 
 class TransformRelOutput(BaseModel):
-    id: Optional[str]
+    id: Optional[str] = None
     reasoning: str
     relation: str
     abstract_relation: str

@@ -16,19 +16,19 @@ def combine_nodes():
 
     qdb = QdrantDatabase()
 
-    for id in tqdm(node_ids, desc="Combining nodes"):
+    for id in tqdm(node_ids, desc="Combining nodes_rels"):
         node = mdb.get_entity(id=id, class_type=Node)
         if not node.latest:
             continue
         try:
-            point = qdb.retrieve_point(collection_name="nodes", point_id=id)
+            point = qdb.retrieve_point(collection_name="nodes_rels", point_id=id)
         except Exception as e:
             print("Id not recognized")
             continue
 
         similar_points = qdb.search_embeddings(
             query_vector=point.vector,
-            collection_name="nodes",
+            collection_name="nodes_rels",
             score_threshold=0.2,
             filter={"latest": True},
             top_k=11,

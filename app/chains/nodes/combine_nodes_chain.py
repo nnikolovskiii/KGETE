@@ -49,7 +49,7 @@ def combine_nodes_chain(
         if output.verdict == "yes":
             for ind in output.node_indexes:
                 child_node = nodes[ind]
-                qdb.update_point(collection_name="nodes", id= child_node.id, update={"latest": False})
+                qdb.update_point(collection_name="nodes_rels", id= child_node.id, update={"latest": False})
 
     return output
 

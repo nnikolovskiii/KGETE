@@ -28,26 +28,26 @@ def insert_triplets():
     qdb = QdrantDatabase()
 
     while True:
-        node_records = qdb.get_all_points(collection_name="nodes", filter={"node_type": "tail"})
+        node_records = qdb.get_all_points(collection_name="nodes_rels", filter={"node_type": "tail"})
         embedded_node_ids = [record.id for record in node_records]
         nodes = mdb.get_entries(class_type=Node, doc_filter={"node_type": "tail"})
         not_embedded_nodes = [node for node in nodes if node.id not in embedded_node_ids]
-        print(f"Not embedded nodes number: {len(not_embedded_nodes)}")
+        print(f"Not embedded nodes_rels number: {len(not_embedded_nodes)}")
         if len(not_embedded_nodes) == 0:
             break
 
 
-        for node in tqdm(not_embedded_nodes, "Adding nodes to qdrant"):
+        for node in tqdm(not_embedded_nodes, "Adding nodes_rels to qdrant"):
             try:
                 # qdb.embedd_and_upsert_record(
                 #     value=f"Name:{triplet.head_value}\nType:{triplet.head_type}\nDescription:{triplet.head_description}",
-                #     collection_name="nodes",
+                #     collection_name="nodes_rels",
                 #     unique_id=triplet.id,
                 #     metadata={"version": "4"}
                 # )
                 qdb.embedd_and_upsert_record(
                     value=f"{node.value}:{node.description}",
-                    collection_name="nodes",
+                    collection_name="nodes_rels",
                     unique_id=node.id,
                     metadata={"node_type":"tail"}
                 )
@@ -84,7 +84,7 @@ def mv_triplets_to_nodes():
         mdb.add_entry(tail_node, metadata={"node_type": "tail"})
 
     qdb = QdrantDatabase()
-    qdb.delete_collection("nodes")
+    qdb.delete_collection("nodes_rels")
     triplet_records = qdb.get_all_points(
         collection_name="triplets",
         filter={"version": "4"},
@@ -100,7 +100,7 @@ def mv_triplets_to_nodes():
 
     print(len(head_nodes))
 
-    for record in tqdm(triplet_records, desc="Move triplets to nodes"):
+    for record in tqdm(triplet_records, desc="Move triplets to nodes_rels"):
         if record.id not in di:
             continue
         payload = record.payload
@@ -108,7 +108,7 @@ def mv_triplets_to_nodes():
         payload["node_type"] = "head"
         qdb.upsert_record(
             unique_id=di[record.id],
-            collection_name="nodes",
+            collection_name="nodes_rels",
             payload=payload,
             vector=record.vector
         )
