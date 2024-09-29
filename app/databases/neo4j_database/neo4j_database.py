@@ -3,13 +3,16 @@ from neo4j._sync.driver import Driver
 from neo4j import GraphDatabase
 from pydantic import BaseModel
 from neo4j.graph import Node as Neo4jNode
+from dotenv import load_dotenv
+import os
+
 
 from app.utils.str_converter import node_relationship_to_str
 
 
-class Node(BaseModel):
+class NeoNode(BaseModel):
     value: str
-    type: str
+    type: Optional[str] = "Node"
     properties: Dict[str, Any] = {}
 
     def __init__(self, **data):
@@ -17,9 +20,9 @@ class Node(BaseModel):
         self.value = self.value.replace("'", "")
         self.properties["value"] = self.value
         self.type = self.type.replace(" ", "_")
-    
-    
-class Relationship(BaseModel):
+
+
+class NeoRelationship(BaseModel):
     type: str
     properties: Optional[Dict[str, Any]] = None
 
@@ -28,23 +31,24 @@ class Relationship(BaseModel):
         self.type = self.type.replace(" ", "_")
     
 
-class Neo4jDataset:
+class Neo4jDatabase:
     driver: Driver
 
     def __init__(self):
-        uri = "bolt://localhost:7687"
+        load_dotenv()
+        url = os.getenv("URL")
+        uri = f"bolt://{url}:7687"
         username = "neo4j"
         password = "Test09875"
         self.driver = GraphDatabase.driver(uri, auth=(username, password))
 
-    def create_node(self, node: Node):
+    def create_node(self, node: NeoNode):
         with self.driver.session() as session:
-            if not self.node_exists(node):
-                properties = Neo4jDataset._transform_properties(node.properties)
-                cypher_query = f"CREATE (n:`{node.type}` {{{properties}}}) RETURN n"
-                session.run(cypher_query)
+            properties = Neo4jDatabase._transform_properties(node.properties)
+            cypher_query = f"CREATE (n:`{node.type}` {{{properties}}}) RETURN n"
+            session.run(cypher_query)
 
-    def node_exists(self, node: Node) -> bool:
+    def node_exists(self, node: NeoNode) -> bool:
         with self.driver.session() as session:
             label = node.type
             label_existence_query = f"CALL db.labels() YIELD label RETURN label"
@@ -54,7 +58,7 @@ class Neo4jDataset:
             if label not in labels:
                 return False
 
-            properties = Neo4jDataset._transform_properties(node.properties)
+            properties = Neo4jDatabase._transform_properties(node.properties)
 
             cypher_query = f"MATCH (n:`{label}` {{{properties}}}) RETURN n"
             result = session.run(cypher_query)
@@ -62,9 +66,9 @@ class Neo4jDataset:
 
     def create_relationship(
             self,
-            node1: Node,
-            node2: Node,
-            relationship: Relationship,
+            node1: NeoNode,
+            node2: NeoNode,
+            relationship: NeoRelationship,
     ):
         if not self.node_exists(node1):
             self.create_node(node1)
@@ -72,9 +76,9 @@ class Neo4jDataset:
             self.create_node(node2)
 
         with self.driver.session() as session:
-            properties1 = Neo4jDataset._transform_properties(node1.properties)
-            properties2 = Neo4jDataset._transform_properties(node2.properties)
-            relationship_prop = Neo4jDataset._transform_properties(relationship.properties) if relationship.properties else ""
+            properties1 = Neo4jDatabase._transform_properties(node1.properties)
+            properties2 = Neo4jDatabase._transform_properties(node2.properties)
+            relationship_prop = Neo4jDatabase._transform_properties(relationship.properties) if relationship.properties else ""
 
             relationship_properties_clause = f" {{{relationship_prop}}}" if relationship_prop else ""
             cypher_query = f"""
@@ -86,10 +90,10 @@ class Neo4jDataset:
 
     def get_neighbours(
             self,
-            node: Node,
+            node: NeoNode,
     ) -> str:
         with self.driver.session() as session:
-            properties = Neo4jDataset._transform_properties(node.properties)
+            properties = Neo4jDatabase._transform_properties(node.properties)
             cypher_query = f"""
             MATCH (node:`{node.type}` {{{properties}}})-[rel]->(neighbour)
             RETURN neighbour, rel
@@ -104,12 +108,12 @@ class Neo4jDataset:
                 [node_relationship_to_str(node, relationship) for node, relationship in result])
 
     @staticmethod
-    def _create_node_from_neo4j(neo4j_node: Neo4jNode) -> Node:
+    def _create_node_from_neo4j(neo4j_node: Neo4jNode) -> NeoNode:
         data = {
             'type': next(iter(neo4j_node.labels)),
             'properties': neo4j_node._properties
         }
-        return Node.model_validate(data)
+        return NeoNode.model_validate(data)
     
     @staticmethod
     def _transform_properties(properties: Dict[str, Any]) -> str:

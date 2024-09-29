@@ -15,10 +15,8 @@ class SimpleOutput(SearchOutput):
 
 class Node(BaseModel):
     id: Optional[str] = None
-    value: str
-    # type: str
+    name: str
     description: str
-    triplet_id: Optional[str] = None
     parent_node: Optional[str] = None
     latest: Optional[bool] = False
 
@@ -40,10 +38,10 @@ class Node(BaseModel):
 class Triplet(BaseModel):
     id: Optional[str] = None
     head_value: str
-    # head_type: str
     relation: str
     tail_value: str
-    # tail_type: str
+    head_id: Optional[str] = None
+    tail_id: Optional[str] = None
     chunk_id: Optional[str] = None
 
     def __str__(self) -> str:

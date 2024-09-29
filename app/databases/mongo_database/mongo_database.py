@@ -1,8 +1,11 @@
 import logging
+import os
+
 from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import Optional, Any, List, Dict, TypeVar
 from typing import Type as TypingType
+from dotenv import load_dotenv
 
 T = TypeVar('T', bound=BaseModel)
 
@@ -12,7 +15,9 @@ class MongoDBDatabase:
     db: Any
 
     def __init__(self):
-        self.client = MongoClient("mongodb://root:example@localhost:27017/")
+        load_dotenv()
+        url = os.getenv("URL")
+        self.client = MongoClient(f"mongodb://root:example@{url}:27017/")
         self.db = self.client["kg_llm_db"]
 
     def add_entry(

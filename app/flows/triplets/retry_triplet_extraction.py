@@ -14,7 +14,7 @@ mdb = MongoDBDatabase()
 chunks = mdb.get_entries(class_type=Chunk)
 
 while True:
-    triplets = mdb.get_entries(class_type=Triplet, doc_filter={"version": "4"})
+    triplets = mdb.get_entries(class_type=Triplet, collection_name="NewTriplet")
     existing_chunk_ids: Set[str] = set()
     [existing_chunk_ids.add(triplet.chunk_id) for triplet in triplets]
     unprocessed_chunks: List[Chunk] = [chunk for chunk in chunks if chunk.id not in existing_chunk_ids]

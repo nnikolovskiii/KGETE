@@ -5,6 +5,9 @@ from qdrant_client import QdrantClient, models
 from app.llms.openai_embedding import embedd_content
 from pydantic import BaseModel
 from qdrant_client.conversions import common_types as types
+from dotenv import load_dotenv
+import os
+
 
 
 class SearchOutput(BaseModel):
@@ -19,7 +22,9 @@ class QdrantDatabase:
     client: QdrantClient
 
     def __init__(self):
-        self.client = QdrantClient(url="http://localhost:6333")
+        load_dotenv()
+        url = os.getenv("URL")
+        self.client = QdrantClient(url=f"http://{url}:6333")
 
     def collection_exists(self, collection_name: str) -> bool:
         return self.client.collection_exists(collection_name)
