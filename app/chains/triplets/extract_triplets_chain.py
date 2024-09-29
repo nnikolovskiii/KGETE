@@ -18,7 +18,7 @@ class Node(BaseModel):
     value: str
     type: str
     description: str
-    triplet_id: Optional[str] = None
+    triplet_id: str
     parent_node: Optional[str] = None
     latest: Optional[bool] = False
 
@@ -36,15 +36,14 @@ class Node(BaseModel):
             return (self.value, self.type, self.description) == (other.value, other.type, other.description)
         return False
 
+
 class Triplet(BaseModel):
     id: Optional[str] = None
     head_value: str
     head_type: str
-    head_description: Optional[str] = None
     relation: str
     tail_value: str
     tail_type: str
-    tail_description: Optional[str] = None
     chunk_id: Optional[str] = None
 
     def __str__(self) -> str:

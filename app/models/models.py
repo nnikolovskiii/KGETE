@@ -14,10 +14,11 @@ class Type(BaseModel):
     type: str
     value: str
     description: str
+    examples: Optional[str] = None
     parent_type: Optional[str] = None
 
     def __str__(self):
-        return f"{self.value}: {self.description}"
+        return f"{self.value}: {self.description}, examples: {self.examples}"
 
 
 class Document(BaseModel):

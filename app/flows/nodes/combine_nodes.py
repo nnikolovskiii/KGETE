@@ -7,7 +7,7 @@ from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 
 from tqdm import tqdm
-from typing import Set, Tuple
+from typing import Set, Tuple, Dict
 
 
 def combine_nodes():
@@ -49,6 +49,7 @@ def update_triplets(
     mdb = MongoDBDatabase()
     parent_nodes = mdb.get_entries(class_type=Node, doc_filter={"latest": True})
     child_nodes = mdb.get_entries(class_type=Node, doc_filter={"latest": False})
+    print(len(parent_nodes), len(child_nodes))
     parent_count = 0
     child_count = 0
     for node in parent_nodes:
@@ -67,22 +68,27 @@ def update_triplets(
         for triplet in tqdm(triplets, desc="Backing up triplets"):
             mdb.add_entry(entity=triplet, collection_name="TripletBackup")
 
-    for child_node in tqdm(child_nodes, desc="Going through child nodes"):
-        triplet = mdb.get_entity(id=child_node.triplet_id, class_type=Triplet, collection_name="TripletBackup")
-        if child_node.value == triplet.head_value:
-            parent_node = get_parent(mdb=mdb, node=child_node)
-            triplet.head_value = parent_node.value
-            triplet.head_type = parent_node.type
-            triplet.head_description = parent_node.description
-            mdb.add_entry(entity=triplet, collection_name="TripletActive")
-        elif child_node.value == triplet.tail_value:
-            parent_node = get_parent(mdb=mdb, node=child_node)
-            triplet.tail_value = parent_node.value
-            triplet.tail_type = parent_node.type
-            triplet.tail_description = parent_node.description
-            mdb.add_entry(entity=triplet, collection_name="TripletActive")
-        else:
-            print("Problem")
+    triplets = mdb.get_entries(class_type=Triplet, collection_name="TripletBackup")
+
+    node_parent_dict: Dict[str, Node] = {}
+    all_nodes = child_nodes + parent_nodes
+
+    for node in tqdm(all_nodes, desc="Forming dict"):
+        parent_node = get_parent(mdb=mdb, node=node)
+        if parent_node.parent_node is not None:
+            raise Exception("Parent node must not have a parent.")
+        node_parent_dict[node.value] = parent_node
+
+    for triplet in tqdm(triplets, desc="Updating triplets:"):
+        new_head = node_parent_dict[triplet.head_value]
+        new_tail = node_parent_dict[triplet.tail_value]
+        triplet.head_value = new_head.value
+        triplet.head_type = new_head.type
+        triplet.head_description = new_head.description
+        triplet.tail_value = new_tail.value
+        triplet.tail_type = new_tail.type
+        triplet.tail_description = new_tail.description
+        mdb.add_entry(entity=triplet, collection_name="TripletActive")
 
     return verify_update()
 
@@ -91,63 +97,15 @@ def verify_update() -> bool:
     mdb = MongoDBDatabase()
     triplets = mdb.get_entries(class_type=Triplet, collection_name="TripletActive")
     parent_nodes = mdb.get_entries(class_type=Node, doc_filter={"latest": True})
-    nodes = set([(parent_node.value, parent_node.type, parent_node.description) for parent_node in parent_nodes])
+    nodes = set([parent_node.value for parent_node in parent_nodes])
     triplet_nodes: Set[Tuple[str, str, str]] = set()
     for triplet in triplets:
-        triplet_nodes.add((triplet.head_value, triplet.head_type, triplet.head_description))
-        triplet_nodes.add((triplet.tail_value, triplet.tail_type, triplet.tail_description))
+        triplet_nodes.add(triplet.head_value)
+        triplet_nodes.add(triplet.tail_value)
 
-    check = [triplet_node for triplet_node in triplet_nodes if triplet_node not in nodes]
-    print(check)
+    check = [1 for triplet_node in triplet_nodes if triplet_node not in nodes]
+    print(len(check))
     return len(check) == 0
-
-
-def check():
-    mdb = MongoDBDatabase()
-    qdb = QdrantDatabase()
-    triplets = mdb.get_entries(class_type=Triplet, collection_name="TripletBackup")
-    qdrant_nodes = set([point.payload["value"].split(":")[0] for point in qdb.get_all_points(collection_name="nodes")])
-    nodes = mdb.get_entries(class_type=Node)
-    nodes_dict = {node.value:node for node in nodes}
-    di = {}
-    s1 = set()
-    new_nodes = []
-
-    for triplet in tqdm(triplets, desc="Checking triplets"):
-        if triplet.head_value not in nodes_dict:
-            di[triplet.head_value] = Node(
-                id=str(uuid.uuid4()),
-                value=triplet.head_value,
-                type=triplet.head_type,
-                description=triplet.head_description,
-                triplet_id=triplet.id,
-            )
-
-        if triplet.tail_value not in nodes_dict:
-            di[triplet.tail_value] = Node(
-                id=str(uuid.uuid4()),
-                value=triplet.tail_value,
-                type=triplet.tail_type,
-                description=triplet.tail_description,
-                triplet_id=triplet.id,
-            )
-
-        if triplet.head_value not in qdrant_nodes:
-            s1.add(triplet.head_value)
-
-        if triplet.tail_value not in qdrant_nodes:
-            s1.add(triplet.tail_value)
-
-    for name, node in tqdm(di.items(), desc="F up", total=len(di)):
-        mdb.add_entry(entity=node, metadata={"extra": True, "latest": True})
-        qdb.embedd_and_upsert_record(
-            value=f"{node.value}: {node.description}",
-            unique_id=node.id,
-            collection_name="nodes",
-            metadata={"extra": True, "latest": True},
-        )
-
-    print(len(di), len(nodes), len(s1))
 
 
 def get_parent(
@@ -157,7 +115,3 @@ def get_parent(
     while node.parent_node is not None:
         node = mdb.get_entity(id=node.parent_node, class_type=Node)
     return node
-
-
-check()
-combine_nodes()

@@ -1,14 +1,15 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from app.chains.triplets.extract_triplets_chain import Node, Triplet
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.databases.qdrant_database.qdrant_database import QdrantDatabase
 from app.models.models import Type
+import numpy as np
 
 
 def check_types():
     mdb = MongoDBDatabase()
 
-    triplets = mdb.get_entries(class_type=Triplet, doc_filter={'version': '4'})
+    triplets = mdb.get_entries(class_type=Triplet, collection_name="TripletActive")
     mongo_node_types = [type.value for type in mdb.get_entries(class_type=Type, doc_filter={'general': True, 'type': 'node_type'})]
     mongo_rel_types = [type.value for type in mdb.get_entries(class_type=Type, doc_filter={'general': True, 'type': 'rel_type'})]
 
@@ -29,9 +30,12 @@ def check_types():
             rel_freq[triplet.relation] = 0
         rel_freq[triplet.relation] += 1
 
-    print(node_freq)
-    print(rel_freq)
-    print(mongo_node_types)
+    print(f"node_freq: {node_freq}")
+    print(f"rel_freq: {rel_freq}")
+    print(f"general_types: {mongo_node_types}")
+
+    node_types = calculate_z_scores(elem_frequencies=tuple(node_freq.items()))
+    print(node_types)
 
 
 def pre_combine_nodes():
@@ -63,6 +67,26 @@ def post_combine_nodes():
     triplets = mdb.get_entries(class_type=Triplet, doc_filter={'version': '4'})
     for triplet in triplets:
         pass
+
+
+def calculate_z_scores(
+        elem_frequencies: Tuple[str, int],
+        threshold: float = 0.0
+):
+    frequencies = [freq for elem, freq in elem_frequencies]
+    elements = [elem for elem, freq in elem_frequencies]
+
+    mean_freq = np.mean(frequencies)
+    std_freq = np.std(frequencies)
+
+    z_scores = [(x - mean_freq) / std_freq for x in frequencies]
+
+    indexes = [ind for ind, z in zip(range(len(z_scores)), z_scores) if z > threshold]
+
+    print("Z-scores:", z_scores)
+    print("Filtered frequencies (Z-score > threshold):", indexes)
+
+    return [elem for ind, elem in enumerate(elements) if ind in indexes]
 
 
 check_types()
