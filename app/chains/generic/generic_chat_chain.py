@@ -1,18 +1,26 @@
 from typing import Any, Dict
 import logging
+from pydantic import BaseModel
 
+from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.llms.generic_chat import generic_chat
 from app.utils.json_extraction import trim_and_load_json
+
+
+class ChatResponse(BaseModel):
+    message: str
+    response: str
 
 
 def generic_chat_chain_json(
         template: str,
         list_name: str = ""
 ) -> Dict[str, Any]:
+    mdb = MongoDBDatabase()
     is_finished = False
     json_data = {}
     tries = 0
-
+    response = ""
     while not is_finished:
         if tries > 0:
             logging.warning(f"Chat not returning as expected. it: {tries}")
@@ -23,7 +31,10 @@ def generic_chat_chain_json(
             raise Exception()
 
         response = generic_chat(message=template)
+
         is_finished, json_data = trim_and_load_json(input_string=response, list_name=list_name)
         tries += 1
+
+    mdb.add_entry(entity=ChatResponse(message=template, response=response))
 
     return json_data

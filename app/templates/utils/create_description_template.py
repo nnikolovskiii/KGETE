@@ -5,9 +5,9 @@ def create_description_template(
         terms: List[str],
         context: str
 ):
-  return f"""You have the main goal to provide descriptions for the given terms based on the provided context.
+  return f"""You are an expert at providing descriptions for the given terms based on the provided context.
 
-    ### Example
+    Example:
 
     {{
      "descriptions": {{
@@ -16,14 +16,14 @@ def create_description_template(
       }},
     }}
 
-    ### Context:
+    Context:
     {context}
 
 
-    ### Terms:
+    Terms:
     [{",".join(terms)}]
 
-    ### Important instructions
+    While creating the descriptions think of these things:
         - You must provide description for each given term
         - Create the description based on the context
         - Return in JSON

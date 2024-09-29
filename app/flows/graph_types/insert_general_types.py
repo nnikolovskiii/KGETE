@@ -67,63 +67,63 @@ general_types = [
     },
     {
         "type": "rel",
+        "name": "Related",
+        "description": "Connects two entities that are related in some way."
+    },
+    {
+        "type": "rel",
+        "name": "Similar",
+        "description": "Indicates that two entities share common characteristics."
+    },
+    {
+        "type": "rel",
+        "name": "Opposite",
+        "description": "Represents a relationship between two entities that are opposite or contrasting."
+    },
+    {
+        "type": "rel",
+        "name": "Cause",
+        "description": "Establishes a cause-and-effect relationship between two entities."
+    },
+    {
+        "type": "rel",
+        "name": "Influence",
+        "description": "Suggests that one entity has an impact on another entity."
+    },
+    {
+        "type": "rel",
+        "name": "IsA",
+        "description": "Represents a relationship where one entity is a subtype or instance of another."
+    },
+    {
+        "type": "rel",
+        "name": "PartOf",
+        "description": "Indicates that one entity is a component or part of another."
+    },
+    {
+        "type": "rel",
         "name": "Has",
-        "description": "Expresses possession, ownership, or inclusion of one entity by another.",
-        "examples": "Entity has Attribute, Agent has Resource"
+        "description": "Establishes a relationship where one entity has or contains another."
     },
     {
         "type": "rel",
-        "name": "Relates to",
-        "description": "A broad, non-specific connection between two entities, without implying hierarchy or causality.",
-        "examples": "Entity relates to Entity"
+        "name": "Enables",
+        "description": "Represents a relationship where one entity enables or facilitates another."
     },
     {
         "type": "rel",
-        "name": "Influences",
-        "description": "Describes a cause-effect or impact relationship between entities or agents.",
-        "examples": "Agent influences Action, Action influences State"
+        "name": "Depends",
+        "description": "Indicates that one entity relies on or depends on another."
     },
     {
         "type": "rel",
-        "name": "Transforms",
-        "description": "Captures the change from one form, state, or condition to another.",
-        "examples": "Action transforms Object, Context transforms State"
+        "name": "RelatedTo",
+        "description": "Represents a generic relationship between two entities that are related in some way."
     },
     {
         "type": "rel",
-        "name": "Belongs to",
-        "description": "Indicates ownership, membership, or association of one entity with another.",
-        "examples": "Entity belongs to Context, Agent belongs to Entity"
-    },
-    {
-        "type": "rel",
-        "name": "Exists in",
-        "description": "Describes the physical or conceptual location of an entity or event within a context.",
-        "examples": "Entity exists in Context"
-    },
-    {
-        "type": "rel",
-        "name": "Interacts with",
-        "description": "Captures the action, communication, or exchange between two or more entities or agents.",
-        "examples": "Agent interacts with Agent, Object interacts with Action"
-    },
-    {
-        "type": "rel",
-        "name": "Represents",
-        "description": "Maps one entity to another as a symbol, model, or representation.",
-        "examples": "Concept represents Entity, Agent represents Object"
-    },
-    {
-        "type": "rel",
-        "name": "Depends on",
-        "description": "Expresses reliance or dependency of one entity or event on another.",
-        "examples": "Action depends on Resource, State depends on Context"
-    },
-    {
-        "type": "rel",
-        "name": "Creates",
-        "description": "Indicates the generation, initiation, or bringing into existence of something by an agent or event.",
-        "examples": "Agent creates Action, Context creates Event"
+        "name": "Refers",
+        "description": "Establishes a relationship between an entity and another entity that it refers to."
     }
 ]
 
@@ -137,7 +137,6 @@ def insert_general_types():
             type="node_type" if type["type"] == "node" else "rel_type",
             value=type["name"],
             description=type["description"],
-            examples = type["examples"]
         ), collection_name="NewType",
             metadata={
             "general": True

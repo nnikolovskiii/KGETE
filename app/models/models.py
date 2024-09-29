@@ -18,7 +18,7 @@ class Type(BaseModel):
     parent_type: Optional[str] = None
 
     def __str__(self):
-        return f"{self.value}: {self.description}, examples: {self.examples}"
+        return f"{self.value}: {self.description}"
 
 
 class Document(BaseModel):

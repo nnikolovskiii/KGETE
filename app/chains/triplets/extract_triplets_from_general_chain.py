@@ -19,7 +19,7 @@ def extract_triplets_from_general_chain(
 ) -> List[Triplet]:
     template = extract_triplets_from_general_template(
         text=chunk.context,
-        node_types=node_types,
+        # node_types=node_types,
         rel_types=rel_types
     )
 
@@ -41,14 +41,14 @@ def extract_triplets_from_general_chain(
             head_node = Node(
                 id=str(uuid.uuid4()),
                 value=triplet.head_value,
-                type=triplet.head_type,
+                # type=triplet.head_type,
                 description=term_descr_pairs[triplet.head_value],
                 triplet_id=triplet.id,
             )
             tail_node = Node(
                 id=str(uuid.uuid4()),
                 value=triplet.tail_value,
-                type=triplet.tail_type,
+                # type=triplet.tail_type,
                 description=term_descr_pairs[triplet.tail_value],
                 triplet_id=triplet.id,
             )

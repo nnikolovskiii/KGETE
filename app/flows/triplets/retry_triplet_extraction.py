@@ -7,7 +7,7 @@ from app.chains.generic.models import Database
 from app.chains.triplets.extract_triplets_from_general_chain import extract_triplets_from_general_chain
 from app.chains.triplets.extract_triplets_chain import Triplet
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
-from app.databases.postgres_database.postgres import Chunk, Type
+from app.models.models import Chunk, Type
 
 mdb = MongoDBDatabase()
 
