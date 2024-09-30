@@ -1,6 +1,9 @@
+import os
 from typing import Any, Dict
 import logging
 from pydantic import BaseModel
+
+from dotenv import load_dotenv
 
 from app.databases.mongo_database.mongo_database import MongoDBDatabase
 from app.llms.generic_chat import generic_chat
@@ -10,6 +13,7 @@ from app.utils.json_extraction import trim_and_load_json
 class ChatResponse(BaseModel):
     message: str
     response: str
+    llm_model: str
 
 
 def generic_chat_chain_json(
@@ -35,6 +39,8 @@ def generic_chat_chain_json(
         is_finished, json_data = trim_and_load_json(input_string=response, list_name=list_name)
         tries += 1
 
-    mdb.add_entry(entity=ChatResponse(message=template, response=response), metadata={"version": 1})
+    load_dotenv()
+    chat_model = os.getenv("CHAT_MODEL")
+    mdb.add_entry(entity=ChatResponse(message=template, response=response, model=), metadata={"version": 1})
 
     return json_data
