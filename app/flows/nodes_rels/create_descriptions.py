@@ -11,15 +11,18 @@ mdb = MongoDBDatabase()
 
 chunks = mdb.get_entries(class_type=Chunk)
 
-for chunk in tqdm(chunks[33:250], desc="Create node descriptions"):
+for chunk in tqdm(chunks, desc="Create node descriptions"):
     try:
         triplets = mdb.get_entries(
             class_type=Triplet,
             collection_name="RelUpdatedTriplet",
             doc_filter={"chunk_id": chunk.id}
         )
+
         nodes = set()
-        if len(triplets) > 0:
+        check = [triplet.id for triplet in triplets if triplet.head_id == None or triplet.tail_id == None]
+
+        if len(triplets) > 0 and len(check) != 0:
             for triplet in triplets:
                 nodes.add(triplet.head_value)
                 nodes.add(triplet.tail_value)

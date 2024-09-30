@@ -57,5 +57,5 @@ def update_rels():
         triplet.relation = new_rel
         mdb.add_entry(entity=triplet, collection_name="RelUpdatedTriplet")
 
-
 transform_rels()
+update_rels()

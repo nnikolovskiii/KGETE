@@ -42,19 +42,18 @@ def pre_combine_nodes():
     mdb = MongoDBDatabase()
     qdb = QdrantDatabase()
 
-    nodes = mdb.get_entries(class_type=Node)
-    [mdb.update_entity(entity=node, update={"latest": False, "parent_node": None}) for node in nodes]
-    [qdb.update_point(id=node.id, collection_name="nodes_rels", update={"latest": False}) for node in nodes]
+    nodes = mdb.get_entries(class_type=Node, collection_name="NewNode")
+    [mdb.update_entity(entity=node, collection_name="NewNode", update={"latest": False, "parent_node": None}) for node in nodes]
 
     name_nodes_dict: Dict[str, List[Node]] = {}
     for node in nodes:
-        if node.value not in name_nodes_dict:
-            name_nodes_dict[node.value] = []
-        name_nodes_dict[node.value].append(node)
+        if node.name not in name_nodes_dict:
+            name_nodes_dict[node.name] = []
+        name_nodes_dict[node.name].append(node)
 
     for name, nodes in name_nodes_dict.items():
         parent_node = nodes[0]
-        mdb.update_entity(entity=parent_node, update={"latest": True})
+        mdb.update_entity(entity=parent_node, collection_name="NewNode", update={"latest": True})
         qdb.update_point(id=parent_node.id, collection_name="nodes_rels", update={"latest": True})
 
         for node in nodes[1:]:
