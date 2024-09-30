@@ -41,6 +41,6 @@ def generic_chat_chain_json(
 
     load_dotenv()
     chat_model = os.getenv("CHAT_MODEL")
-    mdb.add_entry(entity=ChatResponse(message=template, response=response, model=chat_model), metadata={"version": 1})
+    mdb.add_entry(entity=ChatResponse(message=template, response=response, llm_model=chat_model), metadata={"version": 1})
 
     return json_data
