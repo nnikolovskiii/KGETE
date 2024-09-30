@@ -88,24 +88,32 @@ class Neo4jDatabase:
 
             session.run(cypher_query)
 
-    def get_neighbours(
-            self,
-            node: NeoNode,
-    ) -> str:
+    def get_neighbours(self, node_name: str) -> List[Tuple[NeoNode, NeoRelationship, NeoNode]]:
         with self.driver.session() as session:
-            properties = Neo4jDatabase._transform_properties(node.properties)
+            properties = Neo4jDatabase._transform_properties({'value': node_name})
             cypher_query = f"""
-            MATCH (node:`{node.type}` {{{properties}}})-[rel]->(neighbour)
-            RETURN neighbour, rel
+            MATCH (node:`Node` {{{properties}}})-[rel]->(neighbour)
+            RETURN node, rel, neighbour
             UNION
-            MATCH (neighbour)-[rel]->(node:`{node.type}` {{{properties}}})
-            RETURN neighbour, rel
+            MATCH (neighbour)-[rel]->(node:`Node` {{{properties}}})
+            RETURN neighbour, rel, node
             """
 
             result = session.run(cypher_query)
 
-            return f"Value: {node.properties["id"]}\n" + "\n".join(
-                [node_relationship_to_str(node, relationship) for node, relationship in result])
+            neighbours = []
+            for record in result:
+                start_node_data = record["node"]
+                relationship_data = record["rel"]
+                neighbour_node_data = record["neighbour"]
+
+                start_node = NeoNode(value=start_node_data["value"], properties=dict(start_node_data))
+                relationship = NeoRelationship(type=relationship_data.type, properties=dict(relationship_data))
+                neighbour_node = NeoNode(value=neighbour_node_data["value"], properties=dict(neighbour_node_data))
+
+                neighbours.append((start_node, relationship, neighbour_node))
+
+            return neighbours
 
     @staticmethod
     def _create_node_from_neo4j(neo4j_node: Neo4jNode) -> NeoNode:

@@ -45,8 +45,9 @@ def create_unique_nodes():
 def upsert_nodes():
     mdb = MongoDBDatabase()
     qdb = QdrantDatabase()
-    nodes = mdb.get_entries(class_type=Node, collection_name='UpdatedNode')
-
+    existing_ids = [point.id for point in qdb.get_all_points(collection_name="unique_nodes")]
+    nodes = [node for node in mdb.get_entries(class_type=Node, collection_name='UpdatedNode') if node.id not in existing_ids]
+    print(len(nodes))
     for node in tqdm(nodes, desc='Upserting nodes to qdrant'):
         try:
             qdb.embedd_and_upsert_record(

@@ -35,6 +35,6 @@ def generic_chat_chain_json(
         is_finished, json_data = trim_and_load_json(input_string=response, list_name=list_name)
         tries += 1
 
-    mdb.add_entry(entity=ChatResponse(message=template, response=response))
+    mdb.add_entry(entity=ChatResponse(message=template, response=response), metadata={"version": 1})
 
     return json_data

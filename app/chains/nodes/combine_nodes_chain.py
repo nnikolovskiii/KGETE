@@ -29,27 +29,27 @@ def combine_nodes_chain(
 
     json_data = generic_chat_chain_json(template=template)
 
-    if "response" not in json_data:
-        raise Exception("Badly generated response from llm. No key response.")
-    output = CombineNodesOutput(**json_data['response'])
-
-    # databases
-    if not databases:
-        return output
-
-    if Database.MONGO in databases:
-        mdb = MongoDBDatabase()
-        if output.verdict == "yes":
-            for ind in output.node_indexes:
-                child_node = nodes[ind]
-                mdb.update_entity(entity=child_node, update={"latest": False, "parent_node": node.id})
-
-    if Database.QDRANT in databases:
-        qdb = QdrantDatabase()
-        if output.verdict == "yes":
-            for ind in output.node_indexes:
-                child_node = nodes[ind]
-                qdb.update_point(collection_name="nodes_rels", id= child_node.id, update={"latest": False})
-
-    return output
+    # if "response" not in json_data:
+    #     raise Exception("Badly generated response from llm. No key response.")
+    # output = CombineNodesOutput(**json_data['response'])
+    #
+    # # databases
+    # if not databases:
+    #     return output
+    #
+    # if Database.MONGO in databases:
+    #     mdb = MongoDBDatabase()
+    #     if output.verdict == "yes":
+    #         for ind in output.node_indexes:
+    #             child_node = nodes[ind]
+    #             mdb.update_entity(entity=child_node, update={"latest": False, "parent_node": node.id})
+    #
+    # if Database.QDRANT in databases:
+    #     qdb = QdrantDatabase()
+    #     if output.verdict == "yes":
+    #         for ind in output.node_indexes:
+    #             child_node = nodes[ind]
+    #             qdb.update_point(collection_name="nodes_rels", id= child_node.id, update={"latest": False})
+    #
+    # return output
 

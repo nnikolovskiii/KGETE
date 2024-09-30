@@ -24,7 +24,7 @@ class Node(BaseModel):
         frozen = True
 
     def __str__(self):
-        return f"""{self.value}, {self.type}, {self.description}"""
+        return f"""Name:{self.name}\nDescription:[{self.description}]"""
 
     def __hash__(self):
         return hash((self.value, self.type, self.description))

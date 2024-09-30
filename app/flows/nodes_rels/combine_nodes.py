@@ -12,34 +12,34 @@ from typing import Set, Tuple, Dict
 
 def combine_nodes():
     mdb = MongoDBDatabase()
-    node_ids = mdb.get_ids(class_type=Node, doc_filter={"latest": True, "extra": True})
+    node_ids = mdb.get_ids(class_type=Node, collection_name="UpdatedNode", doc_filter={"latest": True})
 
     qdb = QdrantDatabase()
 
-    for id in tqdm(node_ids, desc="Combining nodes_rels"):
-        node = mdb.get_entity(id=id, class_type=Node)
+    for id in tqdm(node_ids[:20], desc="Combining nodes_rels"):
+        node = mdb.get_entity(id=id, class_type=Node, collection_name="UpdatedNode")
         if not node.latest:
             continue
         try:
-            point = qdb.retrieve_point(collection_name="nodes_rels", point_id=id)
+            point = qdb.retrieve_point(collection_name="unique_nodes", point_id=id)
         except Exception as e:
             print("Id not recognized")
             continue
 
         similar_points = qdb.search_embeddings(
             query_vector=point.vector,
-            collection_name="nodes_rels",
+            collection_name="unique_nodes",
             score_threshold=0.2,
             filter={"latest": True},
-            top_k=11,
+            top_k=8,
         )
         similar_points_ids = [point.id for point in similar_points]
-        similar_nodes = [mdb.get_entity(id=id, class_type=Node) for id in similar_points_ids]
+        similar_nodes = [mdb.get_entity(id=id, class_type=Node, collection_name="UpdatedNode") for id in similar_points_ids]
 
         output: CombineNodesOutput = combine_nodes_chain(
             node=similar_nodes[0],
             nodes=similar_nodes[1:],
-            databases=[Database.MONGO, Database.QDRANT]
+            #databases=[Database.MONGO, Database.QDRANT]
         )
 
 
@@ -115,3 +115,6 @@ def get_parent(
     while node.parent_node is not None:
         node = mdb.get_entity(id=node.parent_node, class_type=Node)
     return node
+
+
+combine_nodes()
